@@ -1,0 +1,41 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>圆规-登录</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+	</head>
+	<body class= "need_img_back">
+		<br/>
+		<br/>
+		<center><h1 style = "font-size:50px;color:#bebebe">圆规任务管理系统-登录</h1>
+		</center>
+		<br/>
+			<div class = "login_div" style = "color:#bebebe">
+				<center>
+				<form name = "login_form" action="/login" method="POST">
+					<input name = "form_id" type = "hidden" value="login_form"></input>
+						<span>帐号:</span><!--AUTOCOMPLETE ="off"-->
+						<input name = "userAccount" type = "text" class = "inputText" placeholder="请输入用户名" value="" spellcheck="false" maxlength = "16" 
+						style = "width:250px;height:40px;margin-top:6px;font-size:20px;
+						color:white;background:black;border:1px solid black;"
+						 x-webkit-speech x-webkit-grammar="bUIltin:search"></input><br/>
+						<span>密码:</span>
+						<input name = "userPassword" type = "password" class = "inputText"
+						placeholder = "请输入密码" value="" spellcheck="false" maxlength = "16" 
+						style = "width:250px;height:40px;margin-top:6px;
+						color:white;background:black;
+						font-size:20px;border:1px solid black;"></input><br/><br/>
+						<button type="submit" class="mybutton"
+						style = "position:absolute;left:100px;top:150px;
+						width:250px; height:50px;margin:10px;font-size:20px;
+						font-weight:bold;">
+						登录</button>
+						<p>没有帐号?<a href = "register">立即注册</a></p>
+						{% if login_success==-1 %}
+						<p style = "font-size:16px;color:red;">用户名或密码有误!</p>
+						{% endif %}
+				</form>
+				</center>
+			</div>
+	</body>
+</html>

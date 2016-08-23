@@ -1,0 +1,298 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>生日</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+		<!--全局变量的定义-->
+		<script>
+			function set_submit_single_task(id)
+			{
+				if(id>0)
+				{
+					document.singleTask_form.action="/singletask";
+				}
+				else
+				{
+					document.singleTask_form.action="/newtask";
+				}
+				document.getElementById("single_task_id").value = ""+id;
+				document.singleTask_form.submit();
+			}
+
+			function set_submit_single_birthday(id)
+			{
+				if(id>0)
+				{
+					document.single_birthday_form.action="/single_birthday";
+				}
+				else
+				{
+					document.single_birthday_form.action="/new_birthday";
+				}
+				document.getElementById("person_id").value = ""+id;
+				document.single_birthday_form.submit();
+			}
+		</script>
+		<script src = "../static/jquery.min.js" ></script>
+		<script src = "../static/calendar.js" ></script>
+		<script src = "../static/myfunctions.js" ></script>
+
+		<!--jQuery-->
+		<script>
+		$(document).ready(function(){
+			$("#taskManager").click(function(){
+				$("#birthdayManagerList").slideUp("fast");
+				$("#taskManagerList").slideToggle("fast");
+			});
+
+			$("#birthdayManager").click(function(){
+				$("#taskManagerList").slideUp("fast");
+				$("#birthdayManagerList").slideToggle("fast");
+			});
+
+			$("#check_all_tasks").click(function(){
+				$("#task_list_mode").val("all");
+				document.task_list_form.submit();
+			});
+		});
+		</script>
+	</head>
+	<body class = "need_img_back">
+	<center>
+		<div class = "body_div">
+			<!--隐藏表单1单个详细任务-->
+			<form name = "singleTask_form" action="/singletask" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "singleTask_form"></input>
+				<input id = "single_task_id" name = "single_task_id" value = "0">
+				</input>
+			</form>
+			<!--隐藏表单2任务列表-->
+			<form name = "task_list_form" action="/task_list" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "task_list_form"></input>
+				<input id = "task_list_mode" name = "task_list_mode" value = "today">
+				</input>
+			</form>
+			<!--隐藏表单3生日详细信息-->
+			<form name = "single_birthday_form" action="/single_birthday" method="POST"
+			style = "display:none;">
+				<input name = "form_id" value = "single_birthday_form"></input>
+				<input id = "person_id" name = "person_id" value = "0">
+				</input>
+			</form>
+			<!--头部开始-->
+			<div class = "titleBar">
+				<img src = "../static/img/titleBar.jpg" style = "float:left"></img>
+				<div class = "titleBtnBar">
+				<ul style = "float:left">
+					<li style = "float:left">
+						<a href = "/" title = "返回首页">返回首页</a>
+					</li>
+					<li style = "float:left">
+						<a id = "taskManager" title = "任务管理">任务管理</a>
+					</li>
+					<li style = "float:left">
+						<a id = "birthdayManager" title = "生日管理">生日管理</a>
+					</li>
+					<li style = "float:left">
+						<a href = "/setting" id = "accountSet" title = "账户设置">账户设置</a>
+					</li>
+				</ul>
+				
+				<ul id = "taskManagerList">
+					<li><a title = "新建任务" onclick = "set_submit_single_task(0)">
+					新建任务</a></li>
+					<li><a id = "check_all_tasks" title = "查看所有任务">
+					查看所有任务</a></li>
+				</ul>
+				<ul id = "birthdayManagerList">
+					<li><a title = "添加生日"
+					onclick="set_submit_single_birthday(0);">
+					添加生日</a></li>
+					<li><a href = '/birthday_list' title = "查看所有生日">
+					查看所有生日</a></li>
+				</ul>
+				<form name = "search_form" action="/search_results" method="POST"
+				style = "float:right">
+					<input name = "form_id" type = "hidden" value = "search_form">
+					</input>
+					<input id = "search_task"  name = "search_key" type = "text"
+					placeholder="请输入关键字" {% if test_str %} value="{{test_str}}"
+					{% else %} value = "" {% endif %} spellcheck="false"
+					class = "inputText" maxlength = "10" style = "height:20px;width:200px;margin-top:5px;
+					border:1px solid #FFF;" x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input>
+					<button type="submit" class = "mybutton"
+					style = "height:20px;width:80px;margin-top:5px;margin-right:2px;">任务搜索
+					</button>
+				</form>
+				</div>
+			</div>
+			<!--头部结束-->
+			<div class = "single_center_div">
+			<script>
+				function changeFlag()
+				{
+					var flag = document.getElementById("change_flag");
+					flag.value = "true";
+				}
+				function showImage()
+				{
+					var file = document.getElementById("photo_file").files[0];
+					var viewImg = document.getElementById("small_photo");
+					var reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = function( evt )
+					{
+						viewImg.src = evt.target.result;
+					}
+					changeFlag();
+				}
+				function set_birth_mode_submit(mode)
+				{
+					if(mode==1)
+					{
+						document.getElementById("birth_mode").value="birth_save_mode_form";
+					}
+					else
+					{
+						document.getElementById("birth_mode").value="birth_del_mode_form";
+					}
+					document.birthday_info_form.submit();
+				}
+
+				function isValidDate(str_date)
+				{
+					/*格式:'2005-06-20'*/
+					var reDate =/^((19|20)\d{2}\-)?((0?[1-9])|1[0-2])\-((0?[1-9])|[12][0-9]|3[01])$/;
+					return reDate.test(str_date);
+				}
+
+				function submit_to_save()
+				{
+					if(temp_name = document.getElementById("person_name").value=="")
+					{
+						alert("好友姓名不能为空!");
+					}
+					else
+					{
+						temp_error=0;
+						if(document.getElementById("change_flag").value=="false")
+						{location.href="/";}
+						else
+						{	
+							temp_year = document.getElementById("birthday_year").value;
+							temp_month = document.getElementById("birthday_month").value;
+							temp_day = document.getElementById("birthday_day").value;
+							if (temp_year=="")
+							{
+								temp_str = temp_month+"-"+temp_day;
+							}
+							else
+							{
+								temp_str = temp_year+"-"+temp_month+"-"+temp_day;
+							}
+							if(!isValidDate(temp_str))
+							{
+								alert("生日填写不正确!");
+								temp_error=1;
+							}
+							if(temp_error==0)
+							{
+								set_birth_mode_submit(1);
+							}
+						}
+					}
+				}
+
+				function submit_to_del()
+				{
+					temp_error=0;
+					temp_id = document.getElementById("person_id").value;
+					if(parseInt(temp_id)==NaN)
+					{
+						alert("请勿随意修改person_id!");
+						temp_error=1;
+					}
+					if(temp_error==0)
+					{
+						set_birth_mode_submit(2);
+					}
+				}
+				
+			</script>
+			<center>
+			<div class = "normal_div" style = "text-align:center;">
+				<form name = "birthday_info_form" action="/single_birthday" method="POST"
+				enctype="multipart/form-data">
+					<!--隐藏标签-->
+					<input id = "birth_mode" name = "form_id"
+					type = "hidden" value="birthday_info_form"></input>
+					<input id = "person_id" name = "person_id" type = "hidden" value="{{person_info.id}}"></input>
+					<input id = "change_flag" name = "change_flag" type = "hidden" value="false"></input>
+					{% if person_info.id==0 %}
+					<h2>添加生日</h2>
+					{% else %}
+					<h2>生日详情</h2>
+					{% endif %}
+					<br/>
+					<img  id = "small_photo" class  = "small "  alt = "此图无法显示"
+					src = "{{person_info.photo}}"></img>
+					
+					<input id = "photo_file" name="photo_file" type="file" onchange = "showImage();"
+					title = "上传照片">
+					</input><br/>
+					<span>好友姓名:</span>
+					<input id = "person_name" name = "person_name" type = "text" onchange = "changeFlag()" class = "inputText" placeholder="必填" value="{{person_info.name}}"
+					spellcheck="false" style = "width:250px;height:40px;margin-top:6px; font-size:20px;" x-webkit-speech x-webkit-grammar="bUIltin:search"
+					maxlength = "16" ></input>
+					<br/><br/>
+					<span>好友生日:</span>
+					<input id = "birthday_year" name = "birthday_year" type = "text" class = "inputText" onchange = "changeFlag()"placeholder="选填"
+					value={% if person_info.year=='0' %}""{% else %}"{{person_info.year}}"{% endif %}
+					spellcheck="false"style = "width:70px;height:40px;margin-top:6px; font-size:20px;"maxlength = "4"></input><span>年</span>
+					<input id = "birthday_month" name = "birthday_month" type = "text"
+					onchange = "changeFlag()" class = "inputText" placeholder="必填" value="{{person_info.month}}"
+					spellcheck="false"style = "width:70px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2"></input><span>月</span>
+					<input id = "birthday_day" name = "birthday_day" type = "text"
+					onchange = "changeFlag()" class = "inputText" placeholder="必填" value="{{person_info.day}}"spellcheck="false" 
+					style = "width:70px;height:40px;margin-top:6px; font-size:20px;"
+					maxlength = "2"></input>
+					<span>日</span>
+					<br/><br/>
+					<span>联系方式:</span>
+					<input name = "person_contact" type = "text" class = "inputText"
+					onchange = "changeFlag()" placeholder="选填" value="{{person_info.contact}}"
+					spellcheck="false"style = "width:250px;height:40px;margin-top:6px; font-size:20px;"maxlength = "16"
+					x-webkit-speech x-webkit-grammar="bUIltin:search"></input>
+					<br/><br/>
+				</form>
+				<button class="mybutton" onclick = "submit_to_save();" 
+				style = "margin:2px;width:100px;">保存</button>
+				<button class="mybutton" onclick = "submit_to_del();"
+				style = "margin:2px;width:100px;">删除</button>
+				<br/><br/>
+				{% if birh_error==0 %}
+				<p style = "font-size:16px;color:green;">
+				保存成功!</p>
+				{% elif birth_error==1 %}
+				<p style = "font-size:16px;color:red;">
+				图片文件格式不支持,请重新选择!</p>
+				{% elif birth_error==2 %}
+				<p style = "font-size:16px;color:red;">
+				用户名为空,请重新输入!</p>
+				{% elif birth_error==3 %}
+				<p style = "font-size:16px;color:red;">
+				日期填写不正确,请重新输入!</p>
+				{% elif birth_error==4 %}
+				<p style = "font-size:16px;color:red;">
+				请勿随意修改html或js文件!</p>
+				{% endif %}
+			</div>
+			</center>
+			</div>
+		</div>
+		</center>
+	</body>
+</html>

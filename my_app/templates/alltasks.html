@@ -1,0 +1,169 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>任务清单</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+		<!--全局变量的定义-->
+		<script>
+			function set_submit_single_task(id)
+			{
+				if(id>0)
+				{
+					document.singleTask_form.action="/singletask";
+				}
+				else
+				{
+					document.singleTask_form.action="/newtask";
+				}
+				document.getElementById("single_task_id").value = ""+id;
+				document.singleTask_form.submit();
+			}
+
+			function set_submit_single_birthday(id)
+			{
+				if(id>0)
+				{
+					document.single_birthday_form.action="/single_birthday";
+				}
+				else
+				{
+					document.single_birthday_form.action="/new_birthday";
+				}
+				document.getElementById("person_id").value = ""+id;
+				document.single_birthday_form.submit();
+			}
+		</script>
+		<script src = "../static/jquery.min.js" ></script>
+		<script src = "../static/calendar.js" ></script>
+		<script src = "../static/myfunctions.js" ></script>
+
+		<!--jQuery-->
+		<script>
+		$(document).ready(function(){
+			$("#taskManager").click(function(){
+				$("#birthdayManagerList").slideUp("fast");
+				$("#taskManagerList").slideToggle("fast");
+			});
+
+			$("#birthdayManager").click(function(){
+				$("#taskManagerList").slideUp("fast");
+				$("#birthdayManagerList").slideToggle("fast");
+			});
+
+			$("#check_all_tasks").click(function(){
+				$("#task_list_mode").val("all");
+				document.task_list_form.submit();
+			});
+		});
+		</script>
+	</head>
+	<body class = "need_img_back">
+	<center>
+		<div class = "body_div">
+			<!--隐藏表单1单个详细任务-->
+			<form name = "singleTask_form" action="/singletask" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "singleTask_form"></input>
+				<input id = "single_task_id" name = "single_task_id" value = "0">
+				</input>
+			</form>
+			<!--隐藏表单2任务列表-->
+			<form name = "task_list_form" action="/task_list" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "task_list_form"></input>
+				<input id = "task_list_mode" name = "task_list_mode" value = "today">
+				</input>
+			</form>
+			<!--隐藏表单3生日详细信息-->
+			<form name = "single_birthday_form" action="/single_birthday" method="POST"
+			style = "display:none;">
+				<input name = "form_id" value = "single_birthday_form"></input>
+				<input id = "person_id" name = "person_id" value = "0">
+				</input>
+			</form>
+			<!--头部开始-->
+			<div class = "titleBar">
+				<img src = "../static/img/titleBar.jpg" style = "float:left"></img>
+				<div class = "titleBtnBar">
+				<ul style = "float:left">
+					<li style = "float:left">
+						<a href = "/" title = "返回首页">返回首页</a>
+					</li>
+					<li style = "float:left">
+						<a id = "taskManager" title = "任务管理">任务管理</a>
+					</li>
+					<li style = "float:left">
+						<a id = "birthdayManager" title = "生日管理">生日管理</a>
+					</li>
+					<li style = "float:left">
+						<a href = "/setting" id = "accountSet" title = "账户设置">账户设置</a>
+					</li>
+				</ul>
+				
+				<ul id = "taskManagerList">
+					<li><a title = "新建任务" onclick = "set_submit_single_task(0)">
+					新建任务</a></li>
+					<li><a id = "check_all_tasks" title = "查看所有任务">
+					查看所有任务</a></li>
+				</ul>
+				<ul id = "birthdayManagerList">
+					<li><a title = "添加生日"
+					onclick="set_submit_single_birthday(0);">
+					添加生日</a></li>
+					<li><a href = '/birthday_list' title = "查看所有生日">
+					查看所有生日</a></li>
+				</ul>
+				<form name = "search_form" action="/search_results" method="POST"
+				style = "float:right">
+					<input name = "form_id" type = "hidden" value = "search_form">
+					</input>
+					<input id = "search_task"  name = "search_key" type = "text"
+					placeholder="请输入关键字" {% if test_str %} value="{{test_str}}"
+					{% else %} value = "" {% endif %} spellcheck="false"
+					class = "inputText" maxlength = "10" style = "height:20px;width:200px;margin-top:5px;
+					border:1px solid #FFF;" x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input>
+					<button type="submit" class = "mybutton"
+					style = "height:20px;width:80px;margin-top:5px;margin-right:2px;">任务搜索
+					</button>
+				</form>
+				</div>
+			</div>
+			<!--头部结束-->
+			<div class = "single_center_div">
+			<center>
+			<div class = "normal_div" style = "text-align:left;">
+				<!--隐藏表单1单个详细任务在base.html中-->
+				{% if task_list_mode=='today' %}
+				<center><h1>今日任务</h1></center>
+				{% elif task_list_mode=='finished' %}
+				<center><h1>已完成任务</h1></center>
+				{% elif task_list_mode=='unfinish'%}
+				<center><h1>未完成任务</h1></center>
+				{% elif task_list_mode=='search_result'%}
+				<center><h1>任务搜索结果</h1></center>
+				{% else %}
+				<center><h2>所有任务</h2></center>
+				{% endif %}
+				<br/>
+				{% if task_list_mode=='search_result' and tasks==[] %}
+				<p>没有搜索到任何相关任务!</p>
+				{% endif %}
+				<ul style = "margin-left:30px;margin-right:10px;">
+					{% for task in tasks %}
+					<li><a onclick="set_submit_single_task({{task.id}});">{{task.name}}
+					{% if task.status=='false' %}<span style = "color:red;">(未完成)</span>{% endif %}</a>
+					{% if task.endline!='2099-12-31_23:59:59' %}
+					<span style="float:right;margin-right:2px;color:#F00;">截止时间:{{task.endline}}<span>
+					{% endif %}
+					</li>
+					{% endfor %}
+				</ul>
+				<br/>
+			</div>
+			</center>
+			</div>
+		</div>
+		</center>
+	</body>
+</html>

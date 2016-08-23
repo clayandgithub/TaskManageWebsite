@@ -1,0 +1,56 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>圆规-注册</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+	</head>
+	<body class = "need_img_back">
+		<br/>
+		<br/>
+		<center><h1 style = "font-size:50px;color:#bebebe">圆规任务管理系统-注册</h1>
+		</center>
+		<br/>
+			<div class = "login_div"style = "color:#FFF">
+				<center>
+				<form name = "register_form" action="/register" method="POST">
+					<input name = "form_id" type = "hidden" value="register_form"> </input>
+						<span>帐号:</span>
+						<input name = "userAccount" type = "text" class = "inputText" placeholder="请输入用户名" value="" spellcheck="false" maxlength = "16" 
+						style = "width:250px;height:40px;margin:6px;font-size:20px;
+						color:white;background:black;border:1px solid black;"
+						 x-webkit-speech x-webkit-grammar="bUIltin:search">
+						</input><br/>
+						
+						<span>密码:</span>
+						<input id = "userPassword1" name = "userPassword1" type = "password" class = "inputText" placeholder = "请输入密码" maxlength = "16" 
+						value="" spellcheck="false" style = "width:250px;height:40px; 
+						color:white;background:black;
+						margin:6px; font-size:20px;border:1px solid black;">
+						</input><br/>
+
+						<span>密码:</span>
+						<input id = "userPassword2" name = "userPassword2" type = "password" class = "inputText" placeholder = "请再次输入密码" maxlength = "16" 
+						value="" spellcheck="false" style = "width:250px;height:40px;
+						color:white;background:black;
+						margin:6px; font-size:20px;border:1px solid black;">
+						</input><br/>
+						{% if register_error==1 %}
+						<p style = "font-size:16px;color:red;">
+						用户名或密码不能为空!</p>
+						{% elif register_error==2 %}
+						<p style = "font-size:16px;color:red;">
+						两次密码输入需一致!</p>
+						{% elif register_error==3 %}
+						<p style = "font-size:16px;color:red;">
+						用户名已存在!</p>
+						{% endif %}
+						<p>已有帐号?<a href = "login">立即登录</a></p>
+						<button class="mybutton" type = "submit"
+						style = "position:absolute;left:90px;top:200px;
+						width:250px; height:50px;margin:10px;font-size:20px; font-weight:bold;">
+						注册</button><br/>
+				</form>
+				</center>
+			</div>
+	</body>
+</html>

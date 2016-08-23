@@ -1,0 +1,277 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>设置</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+		<!--全局变量的定义-->
+		<script>
+			function set_submit_single_task(id)
+			{
+				if(id>0)
+				{
+					document.singleTask_form.action="/singletask";
+				}
+				else
+				{
+					document.singleTask_form.action="/newtask";
+				}
+				document.getElementById("single_task_id").value = ""+id;
+				document.singleTask_form.submit();
+			}
+
+			function set_submit_single_birthday(id)
+			{
+				if(id>0)
+				{
+					document.single_birthday_form.action="/single_birthday";
+				}
+				else
+				{
+					document.single_birthday_form.action="/new_birthday";
+				}
+				document.getElementById("person_id").value = ""+id;
+				document.single_birthday_form.submit();
+			}
+		</script>
+		<script src = "../static/jquery.min.js" ></script>
+		<script src = "../static/calendar.js" ></script>
+		<script src = "../static/myfunctions.js" ></script>
+
+		<!--jQuery-->
+		<script>
+		$(document).ready(function(){
+			$("#taskManager").click(function(){
+				$("#birthdayManagerList").slideUp("fast");
+				$("#taskManagerList").slideToggle("fast");
+			});
+
+			$("#birthdayManager").click(function(){
+				$("#taskManagerList").slideUp("fast");
+				$("#birthdayManagerList").slideToggle("fast");
+			});
+
+			$("#check_all_tasks").click(function(){
+				$("#task_list_mode").val("all");
+				document.task_list_form.submit();
+			});
+		});
+		</script>
+	</head>
+	<body class = "need_img_back">
+	<center>
+		<div class = "body_div">
+			<!--隐藏表单1单个详细任务-->
+			<form name = "singleTask_form" action="/singletask" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "singleTask_form"></input>
+				<input id = "single_task_id" name = "single_task_id" value = "0">
+				</input>
+			</form>
+			<!--隐藏表单2任务列表-->
+			<form name = "task_list_form" action="/task_list" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "task_list_form"></input>
+				<input id = "task_list_mode" name = "task_list_mode" value = "today">
+				</input>
+			</form>
+			<!--隐藏表单3生日详细信息-->
+			<form name = "single_birthday_form" action="/single_birthday" method="POST"
+			style = "display:none;">
+				<input name = "form_id" value = "single_birthday_form"></input>
+				<input id = "person_id" name = "person_id" value = "0">
+				</input>
+			</form>
+			<!--头部开始-->
+			<div class = "titleBar">
+				<img src = "../static/img/titleBar.jpg" style = "float:left"></img>
+				<div class = "titleBtnBar">
+				<ul style = "float:left">
+					<li style = "float:left">
+						<a href = "/" title = "返回首页">返回首页</a>
+					</li>
+					<li style = "float:left">
+						<a id = "taskManager" title = "任务管理">任务管理</a>
+					</li>
+					<li style = "float:left">
+						<a id = "birthdayManager" title = "生日管理">生日管理</a>
+					</li>
+					<li style = "float:left">
+						<a href = "/setting" id = "accountSet" title = "账户设置">账户设置</a>
+					</li>
+				</ul>
+				
+				<ul id = "taskManagerList">
+					<li><a title = "新建任务" onclick = "set_submit_single_task(0)">
+					新建任务</a></li>
+					<li><a id = "check_all_tasks" title = "查看所有任务">
+					查看所有任务</a></li>
+				</ul>
+				<ul id = "birthdayManagerList">
+					<li><a title = "添加生日"
+					onclick="set_submit_single_birthday(0);">
+					添加生日</a></li>
+					<li><a href = '/birthday_list' title = "查看所有生日">
+					查看所有生日</a></li>
+				</ul>
+				<form name = "search_form" action="/search_results" method="POST"
+				style = "float:right">
+					<input name = "form_id" type = "hidden" value = "search_form">
+					</input>
+					<input id = "search_task"  name = "search_key" type = "text"
+					placeholder="请输入关键字" {% if test_str %} value="{{test_str}}"
+					{% else %} value = "" {% endif %} spellcheck="false"
+					class = "inputText" maxlength = "10" style = "height:20px;width:200px; margin-top:5px;border:1px solid #FFF;"
+					x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input>
+					<button type="submit" class = "mybutton"
+					style = "height:20px;width:80px;margin-top:5px;margin-right:2px;">任务搜索
+					</button>
+				</form>
+				</div>
+			</div>
+			<!--头部结束-->
+			<div class = "single_center_div">
+			<script>
+				function showImage()
+				{
+					var file = document.getElementById("photo_file").files[0];
+					var viewImg = document.getElementById("small_photo");
+					var reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = function( evt )
+					{
+						viewImg.src = evt.target.result;
+					}
+					changeFlag();
+				}
+				function changeFlag()
+				{
+					var flag = document.getElementById("change_flag");
+					flag.value = "true"
+				}
+				function check_and_submit()
+				{
+					temp_error=0;
+					if(document.getElementById("change_flag").value=="false")
+					{}
+					else
+					{
+						if(document.getElementById("my_account").value=="")
+						{
+							alert("用户名不能为空!");
+							temp_error=1;
+						}
+						else if(document.getElementById("change_pwd_flag").value=="true")
+						{
+							if(document.getElementById("orgin_password").value=="")
+							{
+								alert("原始密码不能为空!");
+								temp_error=1;
+							}
+							else if(document.getElementById("new_password1").value=="")
+							{
+								alert("新密码不能为空!");
+								temp_error=1;
+							}
+							else if(document.getElementById("new_password2").value=="")
+							{
+								alert("新密码不能为空!");
+								temp_error=1;
+							}
+						}
+						if(temp_error==0)
+						{
+							document.setting_form.submit();
+						}
+					}
+				}
+				/*jQuery_start----*/
+				$(document).ready(function(){
+					$("#show_pwd_btn").click(function(){
+						$("#pwd_part").slideDown("fast");
+						$("#show_pwd_btn").fadeOut("fast");
+						$("#change_pwd_flag").val("true");
+						$("#change_flag").val("true");
+						});
+				});
+				/*jQuery_end----*/
+			</script>
+
+			<center>
+			<div class = "normal_div" style = "text-align:center;">
+				<form name = "setting_form" action="/setting" method="POST"
+				enctype="multipart/form-data">
+					<!--隐藏标签-->
+					<input name = "form_id" type = "hidden" value="setting_form"></input>
+					<input id = "change_flag" name = "change_flag" type = "hidden" value="false">
+					</input>
+					<input id = "change_pwd_flag" name = "change_pwd_flag"
+					type = "hidden" value="false"></input>
+
+					<h2>账户设置</h2><br/>
+					<img  id = "small_photo" name = "small_photo" class  = "small"
+					src = "{{my_photo}}"></img>
+					<input id = "photo_file" name="photo_file" type="file" onchange = "showImage();"
+					title = "上传照片">
+					</input><br/><br/>
+
+					<span>用户名称:</span>
+					<input id = "my_account" name = "my_account" type = "text"
+					class = "inputText" placeholder = "请输入用户名" value="{{my_account}}"
+					spellcheck="false"style = "width:250px;height:40px; margin-top:6px;
+					font-size:20px;" onchange = "changeFlag();" maxlength = "16"
+					x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input><br/>
+					<div id = "pwd_part" style = "display:none">
+						<span>原始密码:</span>
+						<input id = "orgin_password" name = "orgin_password" type = "password"
+						class = "inputText" placeholder = "请输入原始密码" value="" spellcheck="false"
+						style = "width:250px;height:40px; margin-top:6px; font-size:20px;"
+						onchange = "changeFlag();" maxlength = "16">
+						</input><br/>
+						
+						<span>新的密码:</span>
+						<input id = "new_password1" name = "new_password1" type = "password"
+						class = "inputText" placeholder = "请输入新密码" value="" spellcheck="false"
+						style = "width:250px;height:40px; margin-top:6px; font-size:20px;"
+						onchange = "changeFlag();" maxlength = "16">
+						</input><br/>
+						<span>确认密码:</span>
+						<input id = "new_password2" name = "new_password2" type = "password"
+						class = "inputText" placeholder = "请再次输入新密码" value="" spellcheck="false"
+						style = "width:250px;height:40px; margin-top:6px; font-size:20px;"
+						onchange = "changeFlag();" maxlength = "16">
+						</input><br/>
+					</div>
+				</form><br/>
+				<button class="mybutton" onclick = "check_and_submit();"
+				style = "margin:2px;width:100px;">保存</button>
+				<button class="mybutton" id = "show_pwd_btn"
+				style = "margin:2px;width:100px;">修改密码</button>
+				<br/>
+				{% if setting_error==0 %}
+				<p style = "font-size:16px;color:green;">
+				设置成功!</p>
+				{% elif setting_error==1 %}
+				<p style = "font-size:16px;color:red;">
+				图片文件格式不支持,请重新选择!</p>
+				{% elif setting_error==2 %}
+				<p style = "font-size:16px;color:red;">
+				用户名已存在,请重新输入!</p>
+				{% elif setting_error==3 %}
+				<p style = "font-size:16px;color:red;">
+				原密码不正确!</p>
+				{% elif setting_error==4 %}
+				<p style = "font-size:16px;color:red;">
+				新密码的两次输入不一致!</p>
+				{% endif %}
+				<!-- <button class="mybutton" style = "margin:2px;width:100px;">注销</button> -->
+				<!-- <p style="color:red; font-size:18px;text-align:center">
+				提示:为保证头像的正常显示,请使用Firefox浏览器或chrome浏览器访问此站<p> -->
+			</div>
+			</center>
+			</div>
+		</div>
+		</center>
+	</body>
+</html>

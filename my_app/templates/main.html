@@ -1,0 +1,382 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>圆规</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+		<!--全局变量的定义-->
+		<script>
+			var CurPersonIndex = 0;
+			var AllPersonNum = 0;
+			function set_submit_single_task(id)
+			{
+				if(id>0)
+				{
+					document.singleTask_form.action="/singletask";
+				}
+				else
+				{
+					document.singleTask_form.action="/newtask";
+				}
+				document.getElementById("single_task_id").value = ""+id;
+				document.singleTask_form.submit();
+			}
+
+			function set_submit_single_birthday(id)
+			{
+				if(id>0)
+				{
+					document.single_birthday_form.action="/single_birthday";
+				}
+				else
+				{
+					document.single_birthday_form.action="/new_birthday";
+				}
+				document.getElementById("person_id").value = ""+id;
+				document.single_birthday_form.submit();
+			}
+		</script>
+		<script src = "../static/jquery.min.js" ></script>
+		<script src = "../static/calendar.js" ></script>
+		<script src = "../static/myfunctions.js" ></script>
+
+		<!--jQuery-->
+		<script>
+		$(document).ready(function(){
+			$("#taskManager").click(function(){
+				$("#birthdayManagerList").slideUp("fast");
+				$("#taskManagerList").slideToggle("fast");
+			});
+			$("#birthdayManager").click(function(){
+				$("#taskManagerList").slideUp("fast");
+				$("#birthdayManagerList").slideToggle("fast");
+			});
+			
+			$("#more_today_tasks").click(function(){
+				$("#task_list_mode").val("today");
+				document.task_list_form.submit();
+			});
+
+			$("#more_finished_tasks").click(function(){
+				$("#task_list_mode").val("finished");
+				document.task_list_form.submit();
+			});
+
+			$("#more_unfinish_tasks").click(function(){
+				$("#task_list_mode").val("unfinish");
+				document.task_list_form.submit();
+			});
+
+			$("#check_all_tasks").click(function(){
+				$("#task_list_mode").val("all");
+				document.task_list_form.submit();
+			});
+
+			function setBirthInfo()
+			{
+				switch(CurPersonIndex)
+				{
+					{% if len_of_birthdayPersons>0 %}
+					case 0:
+						$("#person_photo").attr("src","{{birthdayPersons[0].photo}}");
+						$("#person_name").text("{{birthdayPersons[0].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[0].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[0].contact}}");
+					break;
+					{% endif %}
+					{% if len_of_birthdayPersons>1 %}
+					case 1:
+						$("#person_photo").attr("src","{{birthdayPersons[1].photo}}");
+						$("#person_name").text("{{birthdayPersons[1].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[1].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[1].contact}}");
+					break;
+					{% endif %}
+					{% if len_of_birthdayPersons>2 %}
+					case 2:
+						$("#person_photo").attr("src","{{birthdayPersons[2].photo}}");
+						$("#person_name").text("{{birthdayPersons[2].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[2].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[2].contact}}");
+					break;
+					{% endif %}
+					{% if len_of_birthdayPersons>3 %}
+					case 3:
+						$("#person_photo").attr("src","{{birthdayPersons[3].photo}}");
+						$("#person_name").text("{{birthdayPersons[3].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[3].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[3].contact}}");
+					break;
+					{% endif %}
+					{% if len_of_birthdayPersons>4 %}
+					case 4:
+						$("#person_photo").attr("src","{{birthdayPersons[4].photo}}");
+						$("#person_name").text("{{birthdayPersons[4].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[4].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[4].contact}}");
+					break;
+					{% endif %}
+					{% if len_of_birthdayPersons>5 %}
+					case 5:
+						$("#person_photo").attr("src","{{birthdayPersons[5].photo}}");
+						$("#person_name").text("{{birthdayPersons[5].name}}");
+						$("#person_birthday").text("生日:{{birthdayPersons[5].birthday}}");
+						$("#person_contact").text("联系方式:{{birthdayPersons[5].contact}}");
+					break;
+					{% endif %}
+					default:
+					break;
+				}
+				$("#birthday_index").text(CurPersonIndex+1 +" / "+  {{len_of_birthdayPersons}});
+			}
+			$(window).load(function(){
+				AllPersonNum = {{len_of_birthdayPersons}};
+				CurPersonIndex = 0;
+				{% if len_of_birthdayPersons>0 %}
+				if(AllPersonNum!=0)
+				{
+					$("#birthday_view_p").text("注意:最近有好友过生日!");
+					$("#birthday_view_p").css("color","red");
+					$("#birthday_view_div").css("visibility","visible");
+					if(AllPersonNum>1)
+					{
+						$("#birthday_control_div").css("visibility","visible");
+					}
+					$("#person_photo").attr("src","{{birthdayPersons[0].photo}}");
+					$("#person_name").text("{{birthdayPersons[0].name}}");
+					$("#person_birthday").text("生日:{{birthdayPersons[0].birthday}}");
+					$("#person_contact").text("联系方式:{{birthdayPersons[0].contact}}");
+					$("#birthday_index").text("1 / {{len_of_birthdayPersons}}");
+				}
+				else
+				{
+					$("#birthday_view_div").css("display","none");
+				}
+				{% endif %}
+			});
+			$("#prePersonBtn").click(function(){
+				if(CurPersonIndex <= 0)
+				{}
+				else
+				{
+					CurPersonIndex = CurPersonIndex - 1;
+					setBirthInfo();
+				}
+			});
+			
+			$("#nextPersonBtn").click(function(){
+				if(CurPersonIndex >= AllPersonNum-1
+				|| CurPersonIndex >= 5)
+				{}
+				else
+				{
+					CurPersonIndex = CurPersonIndex + 1;
+					setBirthInfo();
+				}
+			});
+		});
+		</script>
+	</head>
+	<body class = "need_img_back">
+		<div class = "body_div" style = "height:1000px;">
+			<!--隐藏表单1单个详细任务-->
+			<form name = "singleTask_form" action="/singletask" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "singleTask_form"></input>
+				<input id = "single_task_id" name = "single_task_id" value = "0">
+				</input>
+			</form>
+			<!--隐藏表单2任务列表-->
+			<form name = "task_list_form" action="/task_list" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "task_list_form"></input>
+				<input id = "task_list_mode" name = "task_list_mode" value = "today">
+				</input>
+			</form>
+			<!--隐藏表单3生日详细信息-->
+			<form name = "single_birthday_form" action="/single_birthday" method="POST"
+			style = "display:none;">
+				<input name = "form_id" value = "single_birthday_form"></input>
+				<input id = "person_id" name = "person_id" value = "0">
+				</input>
+			</form>
+			<!--头部开始-->
+			<div class = "titleBar">
+				<img src = "../static/img/titleBar.jpg" style = "float:left"></img>
+				<div class = "titleBtnBar">
+				<ul style = "float:left">
+					<li style = "float:left">
+						<a href = "/" title = "返回首页">返回首页</a>
+					</li>
+					<li style = "float:left">
+						<a id = "taskManager" title = "任务管理">任务管理</a>
+					</li>
+					<li style = "float:left">
+						<a id = "birthdayManager" title = "生日管理">生日管理</a>
+					</li>
+					<li style = "float:left">
+						<a href = "/setting" id = "accountSet" title = "账户设置">账户设置</a>
+					</li>
+				</ul>
+				
+				<ul id = "taskManagerList">
+					<li><a title = "新建任务" onclick = "set_submit_single_task(0)">
+					新建任务</a></li>
+					<li><a id = "check_all_tasks" title = "查看所有任务">
+					查看所有任务</a></li>
+				</ul>
+				<ul id = "birthdayManagerList">
+					<li><a title = "添加生日"
+					onclick="set_submit_single_birthday(0);">
+					添加生日</a></li>
+					<li><a href = '/birthday_list' title = "查看所有生日">
+					查看所有生日</a></li>
+				</ul>
+				<form name = "search_form" action="/search_results" method="POST"
+				style = "float:right">
+					<input name = "form_id" type = "hidden" value = "search_form">
+					</input>
+					<input id = "search_task"  name = "search_key" type = "text"
+					placeholder="请输入关键字" {% if test_str %} value="{{test_str}}"
+					{% else %} value = "" {% endif %} spellcheck="false"
+					class = "inputText" maxlength = "10" style = "height:20px;width:200px;margin-top:5px;
+					border:1px solid #FFF;" x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input>
+					<button type="submit" class = "mybutton"
+					style = "height:20px;width:80px;margin-top:5px;margin-right:2px;">任务搜索
+					</button>
+				</form>
+				</div>
+			</div>
+			<!--头部结束-->
+
+			<!--左边的div开始-->
+			<div class = "left_body_div">
+				<div class = "left_div" style = "height:210px">
+				<script>writeCalendar()</script>
+				</div>
+
+				<div class = "left_div" style = "height:250px">
+					<h3>生日提醒</h3>
+					<div class= "line"></div>
+					<p id = "birthday_view_p">最近没有生日提醒!</p>
+					<div id = "birthday_view_div" style = "visibility:hidden">
+					<img class  = "small " id = "person_photo" src = ""></img>
+					<p id = "person_name">1</p>
+					<p id = "person_birthday">2</p>
+					<p id = "person_contact">3</p>
+					<div id = "birthday_control_div" style = "visibility:hidden">
+						<button id = "prePersonBtn" class="mybutton"
+						style = "width:60px;float:left; height:20px;margin:2px;font-size:10px;font-weight:bold;">向前</button>
+						<p id = "birthday_index" style = "float:left;margin-left:48px;"></p>
+						<button id = "nextPersonBtn" class="mybutton"
+						style = "width:60px;float:right; height:20px;margin:2px;font-size:10px;font-weight:bold;">向后</button>
+					</div>
+					</div>
+				</div>
+				
+				<div class = "left_div" style = "height:252px">
+				<h3>友情链接</h3>
+				<div class= "line"></div>
+				<div style = "text-align:left;padding:5px">
+				<ul style = "margin-top:5px;margin-left:20px;margin-right:5px">
+				{% for link in links %}
+				<li><a href = "{{link.url}}">{{link.name}}</a></li>
+				{% endfor %}
+				</ul>
+				</div>
+				</div>
+
+			</div>
+			<!--左边的div结束-->
+			
+			<!--中间的div开始-->
+			<div class = "center_body_div">
+				<div class = "center_div" style = "text-align:left;">
+				<p style = "float:right;font-size:12px">
+				<a id = "more_today_tasks">更多>></a></p>
+				<h3>今日任务</h3>
+				<div class= "line"></div>
+				<ul style = "margin-top:5px;margin-left:20px;margin-right:5px">
+				{% for task in today_tasks %}
+				<li><a onclick="set_submit_single_task({{task.id}});">{{task.name}}</a>
+				{% if task.endline!='2099-12-31_23:59:59' %}
+				<span style="float:right;margin-right:2px;color:red;">截止时间:{{task.endline}}<span>
+				{% endif %}
+				</li>
+				{% endfor %}
+				</ul>
+				</div>
+
+				<div class = "center_div" style = "height:300px;text-align:left;">
+				<p style = "float:right;font-size:12px">
+				<a id = "more_unfinish_tasks">更多>></a></p>
+				<h3>未完成任务</h3>
+				<div class= "line"></div>
+				<ul style = "margin-top:5px;margin-left:20px;margin-right:5px">
+				{% for task in unfinish_tasks %}
+				<li><a onclick="set_submit_single_task({{task.id}});">{{task.name}}</a>
+				{% if task.endline!='2099-12-31_23:59:59' %}
+				<span style="float:right;margin-right:2px;color:red;">截止时间:{{task.endline}}<span>
+				{% endif %}
+				</li>
+				{% endfor %}
+				</ul>
+				</div>
+
+				<div class = "center_div" style = "height:202px;text-align:left;">
+				<p style = "float:right;font-size:12px">
+				<a id = "more_finished_tasks">更多>></a></p>
+				<h3>已完成任务</h3>
+				<div class= "line"></div>
+				<ul style = "margin-top:5px;margin-left:20px;margin-right:5px">
+				{% for task in finished_tasks %}
+				<li><a onclick="set_submit_single_task({{task.id}});">
+				{{task.name}}</a>
+				<!-- <span style="float:right;margin-right:2px;">截止时间:{{task.endline}}<span> -->
+				</li>
+				{% endfor %}
+				</ul>
+				</div>
+			</div>
+			<!--中间的div结束-->
+			
+			<!--右边的div开始-->
+			<div class = "right_body_div">
+				<div class = "right_div">
+					<h3>个人信息</h3>
+					<div class= "line"></div>
+					<center><img  class  = "small "src = {{my_photo}}>
+					</img></center>
+					<p>欢迎你, {{userAccount}}!</p>
+					<form name = "exit_login_form" action="/" method="POST">
+					<input name = "form_id" type = "hidden" value = "exit_login_form"> </input>
+					<button type="submit" class="mybutton" style = "margin-top:15px;">退出登录
+					</button>
+					</form>
+				</div>
+
+				<div class = "right_div" style = "height:473px;">
+					<h3>备忘录</h3>
+					<div class= "line"></div>
+					<form name = "note_form" action="/" method="POST">
+						<input name = "form_id" type = "hidden" value = "note_form">
+						</input>
+						<textarea id = "my_note" name = "my_note" 
+						class = "normal_text_area" maxlength = "1000">{{my_note}}</textarea>
+						<button id = "submit_note_btn" type="submit" class="mybutton" style = "margin-top:2px;margin-bottom:2px;">保存</button>
+					</form>
+				</div>
+
+			</div>
+			<!--右边的div结束-->
+
+			<!--尾部开始-->
+			<div class = "footerBar">
+			<br />
+			<p style = "margin:5px;">圆规个人任务管理系统</p>
+			<p style = "margin:5px;">Copyright@2013 浙江大学数字媒体 All Rights Reserved</p>
+			</div>
+			<!--尾部结束-->
+		</div>
+	</body>
+</html>

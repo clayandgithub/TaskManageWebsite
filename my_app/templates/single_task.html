@@ -1,0 +1,307 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>任务</title>
+		<link rel = "stylesheet" type = "text/css" href = "../static/mystyle.css">
+		<!--全局变量的定义-->
+		<script>
+			function set_submit_single_task(id)
+			{
+				if(id>0)
+				{
+					document.singleTask_form.action="/singletask";
+				}
+				else
+				{
+					document.singleTask_form.action="/newtask";
+				}
+				document.getElementById("single_task_id").value = ""+id;
+				document.singleTask_form.submit();
+			}
+
+			function set_submit_single_birthday(id)
+			{
+				if(id>0)
+				{
+					document.single_birthday_form.action="/single_birthday";
+				}
+				else
+				{
+					document.single_birthday_form.action="/new_birthday";
+				}
+				document.getElementById("person_id").value = ""+id;
+				document.single_birthday_form.submit();
+			}
+
+			function setTaskMode_submit(mode)
+			{
+				if(mode==1)
+				{
+					document.getElementById("task_mode").value="task_save_mode_form";
+				}
+				else if(mode==2)
+				{
+					document.getElementById("task_mode").value="task_finish_mode_form";
+				}
+				else
+				{
+					document.getElementById("task_mode").value="task_del_mode_form";
+				}
+				document.task_info_form.submit();
+			}
+		</script>
+		<script src = "../static/jquery.min.js" ></script>
+		<script src = "../static/calendar.js" ></script>
+		<script src = "../static/myfunctions.js" ></script>
+
+		<!--jQuery-->
+		<script>
+		$(document).ready(function(){
+			$("#taskManager").click(function(){
+				$("#birthdayManagerList").slideUp("fast");
+				$("#taskManagerList").slideToggle("fast");
+			});
+
+			$("#birthdayManager").click(function(){
+				$("#taskManagerList").slideUp("fast");
+				$("#birthdayManagerList").slideToggle("fast");
+			});
+
+			$("#check_all_tasks").click(function(){
+				$("#task_list_mode").val("all");
+				document.task_list_form.submit();
+			});
+		});
+		</script>
+	</head>
+	<body class = "need_img_back">
+	<center>
+		<div class = "body_div">
+			<!--隐藏表单1单个详细任务-->
+			<form name = "singleTask_form" action="/singletask" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "singleTask_form"></input>
+				<input id = "single_task_id" name = "single_task_id" value = "0">
+				</input>
+			</form>
+			<!--隐藏表单2任务列表-->
+			<form name = "task_list_form" action="/task_list" method="POST"
+			style = "display:none">
+				<input name = "form_id" value = "task_list_form"></input>
+				<input id = "task_list_mode" name = "task_list_mode" value = "today">
+				</input>
+			</form>
+			<!--隐藏表单3生日详细信息-->
+			<form name = "single_birthday_form" action="/single_birthday" method="POST"
+			style = "display:none;">
+				<input name = "form_id" value = "single_birthday_form"></input>
+				<input id = "person_id" name = "person_id" value = "0">
+				</input>
+			</form>
+			<!--头部开始-->
+			<div class = "titleBar">
+				<img src = "../static/img/titleBar.jpg" style = "float:left"></img>
+				<div class = "titleBtnBar">
+				<ul style = "float:left">
+					<li style = "float:left">
+						<a href = "/" title = "返回首页">返回首页</a>
+					</li>
+					<li style = "float:left">
+						<a id = "taskManager" title = "任务管理">任务管理</a>
+					</li>
+					<li style = "float:left">
+						<a id = "birthdayManager" title = "生日管理">生日管理</a>
+					</li>
+					<li style = "float:left">
+						<a href = "/setting" id = "accountSet" title = "账户设置">账户设置</a>
+					</li>
+				</ul>
+				
+				<ul id = "taskManagerList">
+					<li><a title = "新建任务" onclick = "set_submit_single_task(0)">
+					新建任务</a></li>
+					<li><a id = "check_all_tasks" title = "查看所有任务">
+					查看所有任务</a></li>
+				</ul>
+				<ul id = "birthdayManagerList">
+					<li><a title = "添加生日"
+					onclick="set_submit_single_birthday(0);">
+					添加生日</a></li>
+					<li><a href = '/birthday_list' title = "查看所有生日">
+					查看所有生日</a></li>
+				</ul>
+				<form name = "search_form" action="/search_results" method="POST"
+				style = "float:right">
+					<input name = "form_id" type = "hidden" value = "search_form">
+					</input>
+					<input id = "search_task"  name = "search_key" type = "text"
+					placeholder="请输入关键字" {% if test_str %} value="{{test_str}}"
+					{% else %} value = "" {% endif %} spellcheck="false"
+					class = "inputText" maxlength = "10" style = "height:20px;width:200px;margin-top:5px;
+					border:1px solid #FFF;" x-webkit-speech x-webkit-grammar="bUIltin:search">
+					</input>
+					<button type="submit" class = "mybutton"
+					style = "height:20px;width:80px;margin-top:5px;margin-right:2px;">任务搜索
+					</button>
+				</form>
+				</div>
+			</div>
+			<!--头部结束-->
+			<div class = "single_center_div">
+			<script>
+				function changeFlag()
+				{
+					var flag = document.getElementById("change_flag");
+					flag.value = "true";
+				}
+				function isValidDate(str_date)
+				{
+					/*格式:'2005-06-20'*/
+					var reDate =/^((19|20)\d{2}\-)?((0?[1-9])|1[0-2])\-((0?[1-9])|[12][0-9]|3[01])$/;
+					return reDate.test(str_date);
+				}
+				function isValidDateTime(str_datetime)
+				{
+					/*格式:'2005-06-20_12:59'*/
+					var reDateTime =/^((19|20)\d{2})?\-(((0?[1-9])|1[0-2]))?\-(((0?[1-9])|[12][0-9]|3[01]))?\_(((0?\d{1})|(1\d{1})|(2[0-3])))?\:(((0?\d{1})|([1-5]\d{1})))?$/
+					return reDateTime.test(str_datetime);
+				}
+				function submit_to_save()
+				{
+					if(temp_name = document.getElementById("task_name").value=="")
+					{
+						alert("任务名不能为空!");
+					}
+					else
+					{
+						temp_error=0;
+						if(document.getElementById("change_flag").value=="false")
+						{location.href="/";}
+						else
+						{
+							start_year = document.getElementById("start_year").value;
+							start_month = document.getElementById("start_month").value;
+							start_day = document.getElementById("start_day").value;
+							start_hour = document.getElementById("start_hour").value;
+							start_minute = document.getElementById("start_minute").value;
+							temp_datetime = start_year+'-'+start_month+'-'+start_day+'_'
+							+start_hour+':'+start_minute;
+							if(!isValidDateTime(temp_datetime))
+							{
+								alert("开始时间填写错误!");
+								temp_error=1;
+							}
+							end_year = document.getElementById("end_year").value;
+							end_month = document.getElementById("end_month").value;
+							end_day = document.getElementById("end_day").value;
+							end_hour = document.getElementById("end_hour").value;
+							end_minute = document.getElementById("end_minute").value;
+							temp_datetime = end_year+'-'+end_month+'-'+end_day+'_'
+							+end_hour+':'+end_minute;
+							if(!isValidDateTime(temp_datetime))
+							{
+								alert("截止时间填写错误!");
+								temp_error=1;
+							}
+							if(temp_error==0)
+							{
+								setTaskMode_submit(1);
+							}
+						}
+					}
+				}
+				function submit_to_del()
+				{
+					if (confirm("确定删除?"))
+					{
+						setTaskMode_submit(3);
+					}
+				}
+				function submit_to_finish()
+				{
+					if (confirm("确定完成任务?"))
+					{
+						setTaskMode_submit(2);
+					}
+				}
+
+			</script>
+			<center>
+			<div class = "normal_div">
+				<form name = "task_info_form" action="/singletask" method="POST">
+					<!--隐藏标签-->
+					<input id = "task_mode" name = "form_id" type = "hidden" value="task_save_mode_form"></input>
+					<input id = "task_id" name = "task_id" type = "hidden" value="{{single_task.id}}"></input>
+					<input id = "change_flag" name = "change_flag" type = "hidden" value="false"></input>
+					<input id = "task_status" name = "task_status" type = "hidden" value="{{single_task.status}}">
+					</input>
+
+					{% if single_task.id==0 %}
+					<h2>新建任务</h2>
+					{% else %}
+					<h2>任务详情</h2>
+					<p>任务状态:{% if single_task.status =='true' %}已完成{% else %}未完成{% endif %}</p>
+					{% endif %}
+					<span>任务名称:</span>
+					<input id = "task_name" name = "task_name" type = "text" class = "inputText" placeholder="请输入任务名称" value="{{single_task.name}}" spellcheck="false"
+					onchange = "changeFlag()" style = "width:250px;height:40px;margin-top:6px; font-size:20px;" maxlength = "10" 
+					x-webkit-speech x-webkit-grammar="bUIltin:search"></input><br/>
+					<span>开始时间:</span>
+					<input id = "start_year" name = "start_year" type = "text" class = "inputText" placeholder="选填" value="{{single_task.start_year}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:60px;height:40px;margin-top:6px; font-size:20px;" maxlength = "4" ></input><span>年</span>
+					<input id = "start_month" name = "start_month" type = "text" class = "inputText" placeholder="选填" value="{{single_task.start_month}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>月</span>
+					<input id = "start_day" name = "start_day" type = "text" class = "inputText" placeholder="选填" value="{{single_task.start_day}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>日</span>
+					<input id = "start_hour" name = "start_hour" type = "text" class = "inputText" placeholder="选填" value="{{single_task.start_hour}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>时</span>
+					<input id = "start_minute" name = "start_minute" type = "text" class = "inputText" placeholder="选填" value="{{single_task.start_minute}}"
+					onchange = "changeFlag()" spellcheck="false"
+					style = "width:50px;height:40px;margin-top:6px; font-size:20px;"
+					 maxlength = "2" ></input><span>分</span><br/><br/>
+
+					<span>截止时间:</span>
+					<input id = "end_year" name = "end_year" type = "text" class = "inputText" placeholder="选填" value="{{single_task.end_year}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:60px;height:40px;margin-top:6px; font-size:20px;" maxlength = "4" ></input><span>年</span>
+					<input id = "end_month" name = "end_month" type = "text" class = "inputText" placeholder="选填" value="{{single_task.end_month}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>月</span>
+					<input id = "end_day" name = "end_day" type = "text" class = "inputText" placeholder="选填" value="{{single_task.end_day}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>日</span>
+					<input id = "end_hour" name = "end_hour" type = "text" class = "inputText" placeholder="选填" value="{{single_task.end_hour}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>时</span>
+					<input id = "end_minute" name = "end_minute" type = "text" class = "inputText" placeholder="选填" value="{{single_task.end_minute}}" onchange = "changeFlag()" 
+					spellcheck="false" style = "width:50px;height:40px;margin-top:6px; font-size:20px;" maxlength = "2" ></input><span>分</span><br/><br/>
+
+					<span>任务描述:</span>
+					<textarea name = "task_description" class = "normal_text_area"
+					onchange = "changeFlag()" style = "width:400px;height:250px;background:white;
+					color:black;border-radius:4px;"
+					maxlength = "1000">{{single_task.description}}</textarea><br/><br/>
+				</form><br/>
+				
+				{% if single_task.status=='false' %}
+				<button class="mybutton" style = "margin:2px;width:100px;" 
+				onclick = "submit_to_save();">保存</button>	
+				{% endif %}
+				
+				{% if single_task.id!=0 %}
+				<button class="mybutton" style = "margin:2px;width:100px;"
+				onclick = "submit_to_del();">删除任务</button>
+				{% endif %}
+
+				{% if single_task.id!=0 and single_task.status=='false' %}
+				<button class="mybutton" style = "margin:2px;width:100px;"
+				onclick = "submit_to_finish();">完成任务</button>
+				{% endif %}
+				<br/><br/>
+				{% if task_error and task_error!=''%}
+				<p style = "font-size:16px;color:{% if task_error=='保存成功' %}green{% else %}red{% endif %};">
+				{{task_error}}</p><br/>
+				{% endif %}
+			</div>
+			</center>
+			</div>
+		</div>
+		</center>
+	</body>
+</html>
